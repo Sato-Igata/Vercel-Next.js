@@ -1,0 +1,47 @@
+.pop-overlay{
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,.35);
+  z-index: 2000;
+}
+.pop-overlay[hidden]{ display: none; }
+
+.pop-modal{
+  width: min(92vw, 315px);
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px 16px 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.2);
+}
+
+.pop-modal h2{
+  margin: 0 0 8px;
+  font-size: 18px; color: #333; font-weight: 700;
+}
+.pop-modal p{
+  margin: 0 0 16px;
+  font-size: 14px; color: #555;
+}
+
+.pop-actions{ display: flex; gap: 8px; justify-content: flex-end; }
+.pop-btn{
+  appearance: none;
+  border: 0; border-radius: 8px;
+  padding: 10px 14px;
+  margin-left: 10px;
+  font-size: 14px; cursor: pointer;
+  background: #e9ecef; color: #222;
+  transition: transform .05s ease;
+  box-shadow: 3px 3px 8px rgba(0,0,0,0.12), -2px -2px 6px rgba(255,255,255,0.6);
+}
+.pop-btn:active{ 
+  box-shadow: inset 3px 3px 8px rgba(0,0,0,0.2), 
+              inset -2px -2px 6px rgba(255,255,255,0.6);
+  transform: translateY(1px); 
+}
+.pop-primary{
+  background: linear-gradient(145deg, #d9f0d0, #b2d8a4);
+}
+.pop-primary:active{ 
+  background: linear-gradient(145deg, #b2d8a4, #d9f0d0);
+}

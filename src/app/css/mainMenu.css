@@ -1,0 +1,175 @@
+
+
+.menu-button {
+  width: 90%;
+  /* height: 110px; */
+  height: 80px;
+  margin: 15px 0;
+  background: linear-gradient(145deg, #d9f0d0, #b2d8a4);
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  color: #333;
+  font-weight: 500;
+  box-shadow: 3px 3px 8px rgba(0,0,0,0.2), 
+              -2px -2px 6px rgba(255,255,255,0.6);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.menu-button:active {
+  box-shadow: inset 3px 3px 8px rgba(0,0,0,0.2), 
+              inset -2px -2px 6px rgba(255,255,255,0.6);
+  background: linear-gradient(145deg, #b2d8a4, #d9f0d0);
+  transform: scale(0.98);
+}
+
+/* ドロップダウンメニュー */
+/* ドロップダウン全体（右上に配置） */
+.dropdown {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+}
+
+/* アイコンの背景、枠線を削除 */
+.material-symbols-outlined {
+  background-color: white;
+  border: none;
+}
+
+/* メニュー本体 */
+.dropdown-menu {
+  position: absolute;
+  top: 50px;            /* アイコンの下 */
+  right: 0;
+  width: 120px;
+  list-style: none;
+  border: 1px solid #000;
+  background: #fff;
+  padding: 4px 0;
+  font-size: 12px;
+  display: none;        /* 初期は非表示 */
+  z-index: 100;
+}
+
+.dropdown-menu.show {
+  display: block;
+}
+
+.dropdown-menu li a {
+  display: block;
+  padding: 6px 10px;
+  text-decoration: none;
+  color: #333;
+}
+
+.dropdown-menu li a:hover {
+  background: #f0f0f0;
+}
+
+/* 区切り線 */
+.dropdown-menu .divider {
+  margin: 4px 0;
+  border-top: 1px solid #000;
+}
+
+
+
+/* ドロップダウン全体（右上） */
+.dropdown{
+  position: absolute;
+  top: 10px;
+  right: 15px;
+}
+
+/* アイコンボタン（pop-btn風の影） */
+#dropdownToggle.material-symbols-outlined{
+  appearance: none;
+  border: 0;
+  border-radius: 999px;
+  padding: 6px;
+  background: #fff;
+  cursor: pointer;
+}
+#dropdownToggle.material-symbols-outlined:active{
+  box-shadow: inset 3px 3px 8px rgba(0,0,0,0.2),
+              inset -2px -2px 6px rgba(255,255,255,0.6);
+  transform: translateY(1px);
+}
+
+/* メニュー本体（pop-modal風） */
+.dropdown-menu{
+  position: absolute;
+  top: 46px;     /* アイコン下 */
+  right: 0;
+  width: min(92vw, 220px);
+  list-style: none;
+
+  /* pop-modal の見た目に寄せる */
+  background: #fff;
+  border: 0;
+  border-radius: 12px;
+  padding: 10px 8px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.2);
+
+  display: none;
+  z-index: 2000;
+}
+
+.dropdown-menu.show{ display: block; }
+
+/* メニュー項目（pop-btn風） */
+.dropdown-menu li{ margin: 6px 0; }
+
+.dropdown-menu li a{
+  display: block;
+  text-decoration: none;
+  color: #222;
+  font-size: 18px;
+
+  border-radius: 10px;
+  padding: 10px 12px;
+  /* background: #e9ecef;
+  box-shadow: 3px 3px 8px rgba(0,0,0,0.12),
+              -2px -2px 6px rgba(255,255,255,0.6); */
+  transition: transform .05s ease;
+}
+
+/* hover は pop っぽく少しだけ */
+.dropdown-menu li a:hover{
+  filter: brightness(0.98);
+}
+
+/* 押し込み（pop-btn:active と同じ） */
+.dropdown-menu li a:active{
+  box-shadow: inset 3px 3px 8px rgba(0,0,0,0.2),
+              inset -2px -2px 6px rgba(255,255,255,0.6);
+  transform: translateY(1px);
+}
+
+/* 区切り線：pop-modalの雰囲気で薄く */
+.dropdown-menu .divider{
+  margin: 8px 6px;
+  border-top: 1px solid rgba(0,0,0,.12);
+}
+
+.dropdown-menu-a {
+  margin: 0px;
+  margin-left: 10px; 
+  margin-right: 10px;
+}
+
+.dropdown-menu li a.danger{
+  background: linear-gradient(145deg, #d9f0d0, #b2d8a4);
+}
+.dropdown-menu li a.danger:active{
+  background: linear-gradient(145deg, #b2d8a4, #d9f0d0);
+}
+
+.dropdown-menu-a-div {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-left: 20px; 
+  margin-right: 20px;
+}

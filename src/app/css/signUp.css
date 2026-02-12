@@ -1,0 +1,94 @@
+.code-data {
+  margin-top: 50px;
+}
+
+.code-inputs {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.code-inputs input {
+  width: 40px;
+  height: 52px;
+  text-align: center;
+  font-size: 24px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.code-inputs input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 6px rgba(0, 123, 255, 0.4);
+  outline: none;
+}
+
+.auth-sub {
+  margin-top: 10px;
+  font-size: 13px;
+}
+
+.link {
+  font-size: 16px;
+}
+
+.signUp-btn {
+  margin-bottom: 30px;
+}
+
+.device-plus {
+  /* width: 150px; */
+  height: 40px;
+  /* border-radius: 1%; */
+  background: linear-gradient(145deg, #d9f0d0, #b2d8a4);
+  /* color: rgb(128, 128, 128); */
+  font-size: 13px;           /* ＋の大きさ */
+  border: none;
+  display: flex;             /* 中央寄せ */
+  align-items: center;       /* 縦中央 */
+  justify-content: center;   /* 横中央 */
+  cursor: pointer;
+  margin-top: 10px;
+  /* box-shadow: 0 2px 6px rgba(0,0,0,0.2); */
+}
+
+.device-plus:hover {
+  filter: brightness(1.1);
+}
+
+.device-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.form-group select,
+.form-group input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+.form-group input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.device-name {
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.dashed-line {
+  margin-top: 30px;
+  margin-bottom: 30px;
+}

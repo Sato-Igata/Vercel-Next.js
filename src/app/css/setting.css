@@ -1,0 +1,236 @@
+.setting-title {
+    margin: 20px 0 20px 0;
+    font-size: 14px;
+    text-align: center;
+    color: #333;
+    font-size: 15px;
+    font-weight: bold;
+    padding-left: 100px;
+}
+
+.setting-container {
+  width: 100%;
+  max-width: 320px;        /* スマホ幅に最適化 */
+  background-color: #fff;
+  box-sizing: border-box;
+  border-radius: 4px;
+  margin-bottom: 50px;
+}
+
+.textarea1 {
+  width: 100%;
+  box-sizing: border-box;
+  line-height: 1.5;          /* 行間 */
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  resize: vertical;          /* 必要なら高さを縦方向だけ変更可 */
+  min-height: calc(1.5em + 20px); /* rows=3 を目安に少し余白 */
+  margin-bottom: 12px;
+  font-size: 15px;   /* 文字サイズを指定 */
+  letter-spacing: 2px;      /* 文字と文字の間隔を広げる */
+  line-height: 1.6;  /* 行間も整えると見やすい */
+}
+
+.textarea2 {
+  width: 100%;
+  box-sizing: border-box;
+  line-height: 1.5;          /* 行間 */
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  resize: vertical;          /* 必要なら高さを縦方向だけ変更可 */
+  min-height: calc(1.5em * 3 + 20px); /* rows=3 を目安に少し余白 */
+  margin-bottom: 12px;
+  font-size: 15px;   /* 文字サイズを指定 */
+  letter-spacing: 2px;      /* 文字と文字の間隔を広げる */
+  line-height: 1.6;  /* 行間も整えると見やすい */
+}
+
+.form-setting { display: flex; flex-direction: column; gap: 8px; }
+
+.round-btn{
+  align-self: center;
+  width: 200px;
+  height: 40px;
+  border: none;
+  border-radius:8px;
+  background: linear-gradient(145deg, #d9f0d0, #b2d8a4);
+  color: #000000;
+  font-size: 14px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,.15);
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.round-btn:hover{ transform: scale(1.03); }
+.round-btn:active{
+  box-shadow: inset 3px 3px 8px rgba(0,0,0,0.2), 
+              inset -2px -2px 6px rgba(255,255,255,0.6);
+  background: linear-gradient(145deg, #b2d8a4, #d9f0d0);
+  transform: scale(0.97); 
+}
+
+.toggle-row{
+  display:flex;
+  align-items:center;    /* 縦中央 */
+  gap:12px;              /* 文字とスイッチの間隔 */
+  cursor:pointer;
+  user-select:none;
+  margin-bottom: 25px;
+}
+
+.toggle-text{
+  line-height:1.3;
+}
+
+:root{
+  --sw: 40px;  /* スイッチ全体の幅 */
+  --sh: 20px;  /* 高さ */
+  --pad: 3px;  /* つまみの余白 */
+  --knob: calc(var(--sh) - var(--pad)*2);
+  --travel: calc(var(--sw) - var(--sh)); /* 左→右の移動距離（幅-高さ） */
+}
+
+.switch{
+  position: relative;
+  display: inline-block;
+  width: var(--sw);
+  height: var(--sh);
+  flex-shrink: 0;
+}
+
+.switch input{
+  position:absolute;
+  opacity:0;
+  width:0; height:0;
+}
+
+.switch{
+  margin-left: auto;
+}
+
+.slider{
+  position:absolute;
+  inset:0;
+  background:#777;
+  border-radius: var(--sh);
+  transition: background .2s ease;
+}
+
+.slider::before{
+  content:"";
+  position:absolute;
+  left: var(--pad);
+  bottom: var(--pad);
+  width: var(--knob);
+  height: var(--knob);
+  background:#fff;
+  border-radius: 50%;
+  transition: transform .2s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,.3);
+}
+
+.switch input:checked + .slider{
+  background:#007bff;
+}
+
+.switch input:checked + .slider::before{
+  transform: translateX(var(--travel));
+}
+
+.setting-button {
+  background: linear-gradient(145deg, #d9f0d0, #b2d8a4);
+  display:block;
+  width: 100%;
+  max-width: 320px;        /* スマホ幅に最適化 */
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  margin: 0 auto;       /* 中央寄せ */
+  margin-bottom: 50px;
+  font-size: 14px;
+  box-shadow: 3px 3px 8px rgba(0,0,0,0.2), 
+              -2px -2px 6px rgba(255,255,255,0.6);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.setting-button:active {
+  box-shadow: inset 3px 3px 8px rgba(0,0,0,0.2), 
+              inset -2px -2px 6px rgba(255,255,255,0.6);
+  background: linear-gradient(145deg, #b2d8a4, #d9f0d0);
+  transform: scale(0.98);
+}
+
+.fixed-bar{
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 1000;
+}
+
+.tel-group{ display:flex; align-items:center; gap:6px; }
+.tel-dash{ user-select:none; color:#888; margin-bottom: 12px; }
+
+.tel-input{
+  box-sizing: border-box;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 20px;
+  letter-spacing: 1px;
+  line-height: 1;
+  margin-bottom: 12px;
+}
+
+/* 桁数に応じて横幅を自動調整（ch=文字幅ベース） */
+.tel-input[maxlength="3"]{ width: 5.5ch; }   /* 3桁用 */
+.tel-input[maxlength="4"]{ width: 6.5ch;   }   /* 4桁用 */
+
+.tel-input:focus{ outline: none; border-color:#007bff; box-shadow:0 0 0 2px #cfe5ff; }
+
+.app-name {
+  width: 100%;
+  text-align: center;   /* 中央寄せ */
+  background: #fff;     /* 白背景 */
+  padding: 8px 0;       /* ちょい余白 */
+  margin: 0;            /* 余白リセット */
+}
+
+.dashed-line {
+  border: none;
+  border-bottom: 1px dashed #999;
+  margin: 5px 0;
+  margin-bottom: 15px;
+}
+
+.code-data {
+  margin-top: 50px;
+}
+
+.code-inputs {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.code-inputs input {
+  width: 40px;
+  height: 52px;
+  text-align: center;
+  font-size: 24px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.code-inputs input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 6px rgba(0, 123, 255, 0.4);
+  outline: none;
+}

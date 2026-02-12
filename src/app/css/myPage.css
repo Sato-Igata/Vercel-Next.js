@@ -1,0 +1,82 @@
+.mypage-title {
+    margin: 20px 0 20px 0;
+    font-size: 14px;
+    text-align: center;
+    color: #333;
+    font-size: 15px;
+    font-weight: bold;
+    padding-left: 75px;
+}
+
+.mypage-container {
+  width: 100%;
+  max-width: 320px;        /* スマホ幅に最適化 */
+  background-color: #fff;
+  box-sizing: border-box;
+  border-radius: 4px;
+}
+
+.mypage-wait-container {
+  height: 350px;
+  overflow: auto;
+  margin-bottom: 20px;
+}
+
+.mypage-wait-content {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px;
+}
+
+.mypage-user-name {
+  line-height: 50px;
+  text-align: center;
+}
+
+.mypage-wait-text {
+  width: 150px;
+  padding-top: 15px;
+}
+
+.setting-button {
+  background: linear-gradient(145deg, #d9f0d0, #b2d8a4);
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  width: 100%;
+  box-shadow: 3px 3px 8px rgba(0,0,0,0.2), 
+              -2px -2px 6px rgba(255,255,255,0.6);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.setting-button:active {
+  box-shadow: inset 3px 3px 8px rgba(0,0,0,0.2), 
+              inset -2px -2px 6px rgba(255,255,255,0.6);
+  background: linear-gradient(145deg, #b2d8a4, #d9f0d0);
+  transform: scale(0.98);
+}
+
+.logout-button {
+  /* background: linear-gradient(145deg, #f1aaaa, #ff5151); */
+  background: linear-gradient(145deg, #d9f0d0, #b2d8a4);
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  margin-top: 50px;
+  font-size: 14px;
+  width: 100%;
+  box-shadow: 3px 3px 8px rgba(0,0,0,0.2), 
+              -2px -2px 6px rgba(255,255,255,0.6);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.logout-button:active {
+  box-shadow: inset 3px 3px 8px rgba(0,0,0,0.2), 
+              inset -2px -2px 6px rgba(255,255,255,0.6);
+  background: linear-gradient(145deg, #f1aaaa, #f67474);
+  transform: scale(0.98);
+}

@@ -1,0 +1,480 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Meiryo", sans-serif;
+    background-color: #fff;
+}
+
+.comp-message {
+    text-align: center;
+}
+
+/* トップ　タイトル */
+.top-title {
+    margin: 60px 0 60px 0;
+    font-size: 14px;
+    text-align: center;
+    color: #333;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+h4 {
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 40px;
+}
+
+/* フッター　アプリ名 */
+.app-name {
+    position: fixed;
+    bottom: 0;
+    margin-bottom: 7px;
+}
+
+/* ページ遷移テキスト */
+.page-transition {
+  margin-top: 10px;
+}
+
+/* 大枠 */
+.container {
+    border: 1px solid #000;
+    width: 100%;
+    min-height: 100vh;   /* 画面全体をカバー */
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 各ページタイトル */
+.title {
+    margin: 60px 0 40px 0;
+    font-size: 14px;
+    text-align: center;
+    color: #333;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+
+/* ログアウトアイコン */
+.material-symbols-outlined {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 14px;
+  color: #000;
+  text-decoration: none;
+  margin-top: 10px;
+}
+.material-symbols-outlined:active {
+  color: #555; /* タップ時に少し濃くなる */
+}
+/****** ここまで ******/
+
+
+/****** 実行ボタン ******/
+.exe-button {
+  background: linear-gradient(145deg, #d9f0d0, #b2d8a4);
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  margin-top: 50px;
+  font-size: 14px;
+  width: 100%;
+  box-shadow: 3px 3px 8px rgba(0,0,0,0.2), 
+              -2px -2px 6px rgba(255,255,255,0.6);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.exe-button:active {
+  box-shadow: inset 3px 3px 8px rgba(0,0,0,0.2), 
+              inset -2px -2px 6px rgba(255,255,255,0.6);
+  background: linear-gradient(145deg, #b2d8a4, #d9f0d0);
+  transform: scale(0.98);
+}
+/****** ここまで ******/
+
+
+
+/****** 真ん中の黒枠 ******/
+.center-container {
+  border: 1px solid #000;  /* 中のフォーム枠 */
+  padding: 60px 20px;
+  width: 100%;
+  max-width: 320px;        /* スマホ幅に最適化 */
+  background-color: #fff;
+  box-sizing: border-box;
+  border-radius: 4px;
+}
+
+
+/****** ユーザーフォーム関係 ******/
+.form-group {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: #333;
+}
+
+input[type="text"],
+input[type="password"] {
+  padding: 10px;
+  border: 1px solid #000;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 4px;
+}
+
+/* お問合せ */
+.contact-text {
+  border: 1px solid #000;
+  font-size: 14px;
+  width: 97%;
+  border-radius: 4px;
+}
+/****** ここまで ******/
+
+
+
+/****** グループ画面関係 ******/
+/* トップ　タイトル */
+.group-title {
+    margin: 20px 0 20px 0;
+    font-size: 14px;
+    text-align: center;
+    color: #333;
+    font-size: 15px;
+    font-weight: bold;
+    padding-left: 60px;
+}
+
+/* フォーム部分 */
+.group-container {
+  width: 100%;
+  max-width: 320px;        /* スマホ幅に最適化 */
+  background-color: #fff;
+  box-sizing: border-box;
+  border-radius: 4px;
+}
+
+/* 区切りのライン */
+.border-line {
+    border: 1px solid gray;
+    margin-bottom: 15px;
+}
+
+/* 区切りのライン（小） */
+.border-line-mini {
+    border: 1px solid gray;
+    margin-bottom: 15px;
+    margin: 10px 20px;
+}
+
+
+/* 各タイトル */
+.form-title, .user-name-disp, .add-dog-titile, .member-edit-titile, .request-wait-title {
+    margin: 10px 10px;
+}
+
+.requestnow-title {
+  margin: 15px 0px;
+}
+
+/* ここからユーザーフォーム関係 */
+/* ユーザー選択 */
+.user-choice {
+    height: 160px;
+}
+
+/**************** ユーザーステータス、参加・不参加ボタン ****************/
+input[type=radio] {
+    display: none; /* ラジオボタンを非表示にする */
+}
+
+.radiobtn-space {
+    height: 73px; /* ラジオボタンのグループ間隔用 */
+}
+
+/* 選択：せこ */
+#seko:checked + label {
+    background: #55aaff;
+    color: #ffffff;
+    border: 2px solid #006DD9;
+}
+
+/* 選択：まち */
+#machi:checked + label {
+    background: #55aaff;
+    color: #ffffff;
+    border: 2px solid #006DD9;
+}
+
+/* 選択：参加 */
+#join:checked + label {
+    background: #b2d8a4;/* マウス選択時の背景色を指定する */
+    color: black; /* マウス選択時のフォント色を指定する */
+    border: 2px solid #006DD9;/* ボックスの境界線を実線で指定する */
+}
+
+/* 選択：不参加 */
+#notjoin:checked + label {
+    background: rgb(255, 94, 94);/* マウス選択時の背景色を指定する */
+    color: black; /* マウス選択時のフォント色を指定する */
+    border: 2px solid #006DD9;/* ボックスの境界線を実線で指定する */
+}
+/***********************************************************/
+
+
+/* ここから犬フォーム関係 */
+.dog-choice {
+    height: 170px;
+    overflow: auto;
+    padding: 5px 10px;
+    margin-top: 10px;
+    /* border: 2px solid black;
+    border-radius: 5px; */
+    margin-bottom: 20px;
+}
+
+.dog-choice-content {
+    display: flex;
+}
+
+
+/* ここからメンバー編集 */
+.member-edit-container {
+  height: 200px;
+  overflow: auto;
+  margin-bottom: 20px;
+}
+
+.member-edit-content {
+  height: 50px;
+}
+
+.delete-btn {
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  margin: 5px;
+}
+
+.delete-btn-red {
+  display: block; /* ブロックレベル要素化する */
+  float: left; /* 要素の左寄せ・回り込を指定する */
+  margin: 5px; /* ボックス外側の余白を指定する */
+  width: 30%; /* ボックスの横幅を指定する */
+  height: 45px; /* ボックスの高さを指定する */
+  padding-left: 5px; /* ボックス内左側の余白を指定する */
+  padding-right: 5px; /* ボックス内御右側の余白を指定する */
+  background-color: rgb(255, 77, 77);
+  text-align: center; /* テキストのセンタリングを指定する */
+  line-height: 40px; /* 行の高さを指定する */
+  cursor: pointer; /* マウスカーソルの形（リンクカーソル）を指定する */
+  border-radius: 5px; /* 角丸を指定する */
+  color: rgb(255, 255, 255);
+}
+
+/* ここからリクエスト承認待ち */
+input[type=button] {
+    display: none; /* ラジオボタンを非表示にする */
+}
+
+.request-wait-container {
+  height: 200px;
+  overflow: auto;
+  margin-bottom: 20px;
+}
+
+.request-wait-content {
+  height: 50px;
+  display: flex;
+  justify-content: space-between;
+  margin: 10px;
+}
+
+.request-user-name {
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+}
+
+
+/* ここからリクエスト中グループ */
+.requestnow-list {
+  height: 150px;
+  overflow: auto;
+  margin-bottom: 20px;
+}
+
+.requestnow-content {
+  display: flex;
+  margin-bottom: 6px;
+}
+
+.requestnow-group-name {
+  height: 30px;
+  width: 150px;
+}
+
+.requestnow-user-name {
+  height: 30px;
+  width: 150px;
+  margin-left: 15px;
+}
+
+
+
+
+
+
+
+
+
+/* ボタン初期状態 */
+.user-join, #user-notjoin, #sel-seko, #sel-machi, .dog-choice-sel, .user-edit-sel, .member-edit-sel, .request-wait-sel {
+    display: block; /* ブロックレベル要素化する */
+    float: left; /* 要素の左寄せ・回り込を指定する */
+    margin: 5px; /* ボックス外側の余白を指定する */
+    width: 43%; /* ボックスの横幅を指定する */
+    height: 45px; /* ボックスの高さを指定する */
+    padding-left: 5px; /* ボックス内左側の余白を指定する */
+    padding-right: 5px; /* ボックス内御右側の余白を指定する */
+    background-color: gray;
+    color: #ffffff; /* フォントの色を指定 */
+    text-align: center; /* テキストのセンタリングを指定する */
+    line-height: 45px; /* 行の高さを指定する */
+    cursor: pointer; /* マウスカーソルの形（リンクカーソル）を指定する */
+    border-radius: 5px; /* 角丸を指定する */
+}
+
+.user-join {
+  width: 93%; /* ボックスの横幅を指定する */
+  background-color: #b2d8a4;
+}
+
+.user-join, .dog-choice-sel, .user-edit-sel, .member-edit-sel, .request-wait-sel {
+  background: #b2d8a4;
+  color: black;
+}
+
+.member-edit-sel {
+  width: 60%;
+}
+
+/**************** 犬参加ボタン ****************/
+input[type=checkbox] {
+    display: none; /* ラジオボタンを非表示にする */
+}
+
+input[type="checkbox"]:checked + label {
+    background-color: rgb(255, 94, 94);
+}
+/***********************************************************/
+
+
+/* ===== Header (Back button) ===== */
+/* .container { position: relative; } */
+.back-header{
+  /* display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 8px; */
+
+  /* position: sticky;
+  top: 10px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 8px; */
+
+  width: 100%;
+  align-self: stretch;         /* 親がalign-items:centerでも伸ばす */
+  display: flex;
+  justify-content: flex-start; /* 左寄せ */
+}
+
+/* 戻るボタン本体 */
+.back-button{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 10px 12px;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 12px;
+
+  background: rgba(255,255,255,0.06);
+  color: inherit;
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ちょい“押せる感” */
+.back-button:active{
+  transform: translateY(1px);
+}
+
+.back-icon{
+  font-size: 30px;
+  line-height: 1;
+}
+
+.back-circle-button {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+
+  color: #000;
+  font-size: 18px;
+  font-weight: bold;
+
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  margin-left: -10px;
+}
+
+.back-circle-button:active {
+  box-shadow: 
+    inset 3px 3px 8px rgba(0,0,0,0.25),
+    inset -2px -2px 6px rgba(255,255,255,0.6);
+  transform: scale(0.95);
+}
+
+.text-copy {
+  background: linear-gradient(145deg, #d9f0d0, #b2d8a4);
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  width: 100%;
+  box-shadow: 3px 3px 8px rgba(0,0,0,0.2), 
+              -2px -2px 6px rgba(255,255,255,0.6);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
