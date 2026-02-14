@@ -263,19 +263,19 @@ const SettingPage: React.FC = () => {
     }
 
     const setdata = {
-      name: username,
       tele: telHidden,
       email: email,
-      mapbtn: mapControl,
-      gps: gpsToggle,
-      ene: eneToggle,
+      name: username,
+      mapbtn: mapControl ? 1 : 0,
+      gps: gpsToggle ? 1 : 0,
+      ene: eneToggle ? 1 : 0,
       devicelist: deviceid,
       devicename: devicename,
     };
     console.log(
-      'name:', username,
       'tele:', telHidden,
       email,
+      'name:', username,
       'mapbtn:', mapControl,
       'gps:', gpsToggle,
       'ene:', eneToggle,

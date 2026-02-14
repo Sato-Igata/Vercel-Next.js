@@ -466,16 +466,101 @@ window.initHunterMap = async function () {
   const SAVE_ACCURACY_MAX = 20; // m
   const MIN_MOVE_M = 3;         // m
   const MIN_SAVE_MS = 4500;     // ms
-  await saveUserData(0);
-  const initialCenter = [userLat, userLng];
-  const zoomLevel = sessionStorage.getItem('zoomLevel'); // ズーム（数字が大きいほど拡大）
 
+  const isMobile = window.innerWidth <= 768;
+  // 通常マーカー
+  const largeIcon = L.icon({
+    iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+    iconSize: isMobile ? [40, 60] : [25, 41],
+    iconAnchor: isMobile ? [20, 60] : [12, 41],
+    popupAnchor: isMobile ? [0, -60] : [0, -41]
+  });
+  // 絵文字のカスタムアイコン（外部画像不要）
+  // const personPng = L.icon({
+  //   iconUrl: '/img/person_red.png',
+  //   iconSize: [28, 28],
+  //   iconAnchor: [14, 24],
+  //   popupAnchor: [0, -24]
+  // });
+  // ユーザーマーカー
+  const userIcon = L.divIcon({
+    className: 'emoji-marker person-user',
+    html: '<span class="emoji">👤</span>',
+    iconSize: window.innerWidth <= 768 ? [40, 40] : [28, 28],
+    iconAnchor: window.innerWidth <= 768 ? [20, 34] : [14, 24],
+    popupAnchor: [0, -28]
+  });
+  // 人マーカー
+  const personIcon = L.divIcon({
+    className: 'emoji-marker',
+    html: '<span class="emoji">👤</span>',
+    iconSize: window.innerWidth <= 768 ? [40, 40] : [28, 28],
+    iconAnchor: window.innerWidth <= 768 ? [20, 34] : [14, 24],
+    popupAnchor: [0, -28]
+  });
+  // 人(赤)マーカー
+  const personRedIcon = L.divIcon({
+    className: 'emoji-marker person-red',
+    html: '<span class="emoji">👤</span>',
+    iconSize: window.innerWidth <= 768 ? [40, 40] : [28, 28],
+    iconAnchor: window.innerWidth <= 768 ? [20, 34] : [14, 24],
+    popupAnchor: [0, -28]
+  });
+  // 犬マーカー
+  const dogIcon = L.divIcon({
+    className: 'emoji-marker',
+    html: '<span class="emoji">🐶</span>',
+    iconSize: window.innerWidth <= 768 ? [40, 40] : [28, 28],
+    iconAnchor: window.innerWidth <= 768 ? [20, 34] : [14, 24],
+    popupAnchor: [0, -28]
+  });
+  // 車マーカー
+  const carIcon = L.divIcon({
+    className: 'emoji-marker',
+    html: '<span class="emoji">🚗</span>',
+    iconSize: window.innerWidth <= 768 ? [40, 40] : [28, 28],
+    iconAnchor: window.innerWidth <= 768 ? [20, 34] : [14, 24], // 足元を合わせる
+    popupAnchor: [0, -28]
+  });
+  // 待ち場マーカー
+  const satelliteIcon = L.divIcon({
+    className: 'emoji-marker',
+    html: '<span class="emoji">🛰️</span>',
+    iconSize: window.innerWidth <= 768 ? [40, 40] : [28, 28],
+    iconAnchor: window.innerWidth <= 768 ? [20, 34] : [14, 24],
+    popupAnchor: [0, -28]
+  });
+  // トグルの状態（再描画でも保持＆再適用したい）
+  let distanceToggleOn = false;
+  let locationToggleOn = false;
+  let myUserId = 0;
+  const markersById = new Map();
+  const markersByDataId = new Map();
+  const markerMetaByMid = new Map();
+  const markersByUserId       = new Map(); // user_id -> marker（人）
+  const markersByModelNumber  = new Map(); // model_number -> marker（犬/デバイス）
+  const baDataIds             = new Set(); // 待ち場の data_id（status_flag=4 & point_nameあり）
+  const carDataIds            = new Set(); // 車の data_id（status_flag=5 & point_nameあり)
+  const markersByKey = new Map(); // key -> Set<L.Marker>
+  const linesByKey   = new Map(); // key -> Set<L.Polyline>
+  const latestMarkerByKey = new Map();
+  window._markersByDataId = markersByDataId;
+  window._markersById = markersById;
+  window.markerMetaByMid = markerMetaByMid;
+  window.markersByKey = markersByKey;
+  window.setVisibilityForKey = setVisibilityForKey;
+  window.updateDistanceToggleState = updateDistanceToggleState;
+  window.updateLocationToggleState = updateLocationToggleState;
+  window.showDeleteConfirmForMarker = showDeleteConfirmForMarker;
+  window._latestMarkerByKey = latestMarkerByKey;
+  const zoomLevel = sessionStorage.getItem('zoomLevel'); // ズーム（数字が大きいほど拡大）
+  
   // 地図を作成
   const map = L.map('map', {
     rotate: true,      // ← 回転機能 ON
     touchRotate: true, // ← 2本指での回転を有効化（ピンチ＋ひねり）
     // shiftKeyRotate: true, //（任意）PCで Shift + ドラッグで回転したい場合
-  }).setView(initialCenter, zoomLevel);
+  }).setView([userLat, userLng], zoomLevel);
 
   L.Marker.mergeOptions({
     rotateWithView: false
@@ -545,106 +630,19 @@ window.initHunterMap = async function () {
   std.addTo(map);
   map.attributionControl.addAttribution('地理院タイル（https://maps.gsi.go.jp/development/ichiran.html）');
 
-  const isMobile = window.innerWidth <= 768;
-  // console.log(window.innerWidth);
-  // console.log(isMobile);
-  // 通常マーカー
-  const largeIcon = L.icon({
-    iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-    iconSize: isMobile ? [40, 60] : [25, 41],
-    iconAnchor: isMobile ? [20, 60] : [12, 41],
-    popupAnchor: isMobile ? [0, -60] : [0, -41]
-  });
-
-  // 絵文字のカスタムアイコン（外部画像不要）
-  // const personPng = L.icon({
-  //   iconUrl: '/img/person_red.png',
-  //   iconSize: [28, 28],
-  //   iconAnchor: [14, 24],
-  //   popupAnchor: [0, -24]
-  // });
-  // ユーザーマーカー
-  const userIcon = L.divIcon({
-    className: 'emoji-marker person-user',
-    html: '<span class="emoji">👤</span>',
-    iconSize: window.innerWidth <= 768 ? [40, 40] : [28, 28],
-    iconAnchor: window.innerWidth <= 768 ? [20, 34] : [14, 24],
-    popupAnchor: [0, -28]
-  });
-  // 人マーカー
-  const personIcon = L.divIcon({
-    className: 'emoji-marker',
-    html: '<span class="emoji">👤</span>',
-    iconSize: window.innerWidth <= 768 ? [40, 40] : [28, 28],
-    iconAnchor: window.innerWidth <= 768 ? [20, 34] : [14, 24],
-    popupAnchor: [0, -28]
-  });
-  // 人(赤)マーカー
-  const personRedIcon = L.divIcon({
-    className: 'emoji-marker person-red',
-    html: '<span class="emoji">👤</span>',
-    iconSize: window.innerWidth <= 768 ? [40, 40] : [28, 28],
-    iconAnchor: window.innerWidth <= 768 ? [20, 34] : [14, 24],
-    popupAnchor: [0, -28]
-  });
-  // 犬マーカー
-  const dogIcon = L.divIcon({
-    className: 'emoji-marker',
-    html: '<span class="emoji">🐶</span>',
-    iconSize: window.innerWidth <= 768 ? [40, 40] : [28, 28],
-    iconAnchor: window.innerWidth <= 768 ? [20, 34] : [14, 24],
-    popupAnchor: [0, -28]
-  });
-  // 車マーカー
-  const carIcon = L.divIcon({
-    className: 'emoji-marker',
-    html: '<span class="emoji">🚗</span>',
-    iconSize: window.innerWidth <= 768 ? [40, 40] : [28, 28],
-    iconAnchor: window.innerWidth <= 768 ? [20, 34] : [14, 24], // 足元を合わせる
-    popupAnchor: [0, -28]
-  });
-  // 待ち場マーカー
-  const satelliteIcon = L.divIcon({
-    className: 'emoji-marker',
-    html: '<span class="emoji">🛰️</span>',
-    iconSize: window.innerWidth <= 768 ? [40, 40] : [28, 28],
-    iconAnchor: window.innerWidth <= 768 ? [20, 34] : [14, 24],
-    popupAnchor: [0, -28]
-  });
-
   // マーカーをまとめて管理するレイヤー
   const markersLayer = L.layerGroup().addTo(map);
   const linesLayer   = L.layerGroup().addTo(map);
 
   // 距離線専用レイヤ（トグルON/OFFでまとめて制御）
   const distanceLinesLayer = L.layerGroup().addTo(map);
-
-  // トグルの状態（再描画でも保持＆再適用したい）
-  let distanceToggleOn = false;
-  let locationToggleOn = false;
-
-  const markersById = new Map();
-  const markersByDataId = new Map();
-  const markerMetaByMid = new Map();
-  const markersByUserId       = new Map(); // user_id -> marker（人）
-  const markersByModelNumber  = new Map(); // model_number -> marker（犬/デバイス）
-  const baDataIds             = new Set(); // 待ち場の data_id（status_flag=4 & point_nameあり）
-  const carDataIds            = new Set(); // 車の data_id（status_flag=5 & point_nameあり)
-  const markersByKey = new Map(); // key -> Set<L.Marker>
-  const linesByKey   = new Map(); // key -> Set<L.Polyline>
-  const latestMarkerByKey = new Map();
   
   window._map = map;
-  window._markersByDataId = markersByDataId;
-  window._markersById = markersById;
-  window.markerMetaByMid = markerMetaByMid;
-  window.markersByKey = markersByKey;
-  window.setVisibilityForKey = setVisibilityForKey;
-  window.updateDistanceToggleState = updateDistanceToggleState;
-  window.updateLocationToggleState = updateLocationToggleState;
-  window.showDeleteConfirmForMarker = showDeleteConfirmForMarker;
-  window._latestMarkerByKey = latestMarkerByKey;
 
+  window._markersLayer = markersLayer;
+  window._linesLayer   = linesLayer;
+  window._distanceLinesLayer = distanceLinesLayer;
+  
   // ユーザー操作でONにされたものを保持（5秒ごとの再描画で復元）
   const visibleUsers   = new Set(); // user_id
   const visibleModels  = new Set(); // model_number（文字列）
@@ -676,6 +674,11 @@ window.initHunterMap = async function () {
     start = 1;
     await renderMarkers();
   }
+
+  await ensureMyUserId();
+  await saveUserData(0);
+  const initialCenter = [userLat, userLng];
+
   document.getElementById('loading').classList.add('hidden');
   setTimeout(initSwitchesAllOn, 0);
   if (sessionStorage.getItem('mapFlag') === '1') {
@@ -707,6 +710,13 @@ window.initHunterMap = async function () {
     console.log('zoomLevel更新:', sessionStorage.getItem('zoomLevel'));
   });
 
+  async function ensureMyUserId() {
+    if (myUserId) return myUserId;
+    await userCheck(0);        // ← ここで userNum が自分になる想定
+    myUserId = Number(userNum);
+    return myUserId;
+  }
+
   async function userCheck(uid) {
     const setdata = {
       uid:  uid
@@ -726,6 +736,7 @@ window.initHunterMap = async function () {
       if (response.ok) {
         usercheck = Number(result.check);
         userNum   = Number(result.num);
+        console.log('userid=',userNum);
       }
     } catch (error) {
       console.error('通信エラー:', error);
@@ -962,26 +973,10 @@ window.initHunterMap = async function () {
     userAcc    = coords.accuracy;
     userAlt    = coords.altitude;
     userAltAcc = coords.altitudeAccuracy;
+    updateMyMarkerFromCoords(coords);
     console.log('省エネモード：ON');
   }
   
-  async function getWatchPosition() {
-    if (window._geoWatchId != null) return;
-    const WATCH_OPT = { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 };
-    window._geoWatchId = navigator.geolocation.watchPosition(
-      (pos) => {
-        latestCoords = pos.coords;
-        userLat    = latestCoords.latitude;
-        userLng    = latestCoords.longitude;
-        userAcc    = latestCoords.accuracy;
-        userAlt    = latestCoords.altitude;
-        userAltAcc = latestCoords.altitudeAccuracy;
-        console.log('省エネモード：OFF', latestCoords);
-      },
-      (err) => console.error("watchPosition error:", err),
-      WATCH_OPT
-    );
-  }
   // 「1回でも座標が入るまで待つ」(タイムアウト付き)
   function waitForCoords({ timeoutMs = 6000, maxAcc = null } = {}) {
     return new Promise((resolve, reject) => {
@@ -1039,6 +1034,93 @@ window.initHunterMap = async function () {
     return 2 * R * Math.asin(Math.sqrt(a));
   }
 
+  function updateMyMarkerFromCoords(coords) {
+    const ml = window._markersLayer;
+    if (!ml) return; // まだ地図/レイヤ未生成なら待つ 
+    const myId = Number(myUserId || userNum);
+    if (!myId || !markersByUserId) return;
+    let marker = markersByUserId.get(myId);
+    if (!marker) {
+      marker = L.marker([coords.latitude, coords.longitude], {
+        icon: locationToggleOn ? userIcon : personIcon
+      }).addTo(ml);
+      markersByUserId.set(myId, marker);
+      // トグル制御してるなら key 側にも登録（任意だけど重要）
+      const k = `user:${myId}`;
+      if (!markersByKey.has(k)) markersByKey.set(k, new Set());
+      markersByKey.get(k).add(marker);
+    } else {
+      marker.setLatLng([coords.latitude, coords.longitude]);
+      marker.setIcon(locationToggleOn ? userIcon : personIcon);
+    }
+    const latNum = Number(coords.latitude);
+    const lngNum = Number(coords.longitude);
+    const accNum = Number(coords.accuracy ?? 0);
+
+    // 表示用（文字列）
+    const lat = String(latNum);
+    const lng = String(lngNum);
+    const acc = String(Math.round(accNum));
+    const timeId = new Date().toISOString(); // 必要ならあなたの timeId 形式に差し替え
+
+    // ユーザー名（見つからない場合の保険）
+    let username = '本人';
+    const idx = Array.isArray(useridList) ? useridList.findIndex(v => Number(v) === myId) : -1;
+    if (idx >= 0 && Array.isArray(userName) && userName[idx]) username = userName[idx];
+
+    // クリック前に開いてたら維持
+    const wasOpen = marker.isPopupOpen?.() ?? false;
+
+    // マーカー更新
+    marker.setLatLng([latNum, lngNum]);
+
+    // 自分表示トグルに合わせたアイコン更新
+    const iconForMarker = locationToggleOn ? userIcon : personIcon;
+    marker.setIcon(iconForMarker);
+
+    // Popup HTML
+    const popupHtml = `
+      <b>${username}</b><br>
+      緯度：${lat}<br>
+      経度：${lng}<br>
+      精度：${acc} m<br>
+      時間：${timeId}
+    `;
+
+    const popupObj = marker.getPopup?.();
+    if (!popupObj) {
+      marker.bindPopup(popupHtml, { autoPan: false });
+    } else {
+      popupObj.setContent(popupHtml);
+      popupObj.setLatLng(marker.getLatLng());
+    }
+
+    if (wasOpen) marker.openPopup?.();
+
+    // ==== マーカークリック時の選択状態の保存（1回だけ）====
+    if (!marker._hasSelectionHandler) {
+      marker.on('click', () => {
+        const k = `user:${myId}`;
+        const storeKey = 'selectedMarkerKey';
+        const cur = sessionStorage.getItem(storeKey);
+
+        if (cur === k) {
+          sessionStorage.removeItem(storeKey);
+          marker.closePopup?.();
+          return;
+        }
+
+        sessionStorage.setItem(storeKey, k);
+
+        setTimeout(() => {
+          const popupEl = document.querySelector('.leaflet-popup-close-button');
+          if (popupEl) popupEl.style.display = 'none';
+        }, 200);
+      });
+      marker._hasSelectionHandler = true;
+    }
+  }
+
   function startWatchPositionOnce() {
     if (!("geolocation" in navigator)) {
       throw new Error("このブラウザは位置情報に対応していません");
@@ -1054,7 +1136,8 @@ window.initHunterMap = async function () {
         userAcc    = latestCoords.accuracy;
         userAlt    = latestCoords.altitude ?? 1.0;
         userAltAcc = latestCoords.altitudeAccuracy ?? 0;
-
+        
+        updateMyMarkerFromCoords(latestCoords);
         // デバッグ
         console.log('省エネモード：OFF', latestCoords);
       },
@@ -1066,6 +1149,7 @@ window.initHunterMap = async function () {
       WATCH_OPT
     );
   }
+
   async function saveLatestToServerIfNeeded(pointType = 0) {
     // mapFlag=1（通常）以外は保存しない（ポイント登録モード等で誤保存防止）
     if (sessionStorage.getItem('mapFlag') !== '1') return;
@@ -1138,6 +1222,7 @@ window.initHunterMap = async function () {
       }
       if (!eneFlag) {
         // 現在地を継続監視で取得（1回だけ開始）
+        await ensureMyUserId();
         startWatchPositionOnce();
 
         // 初回だけ「座標が入るまで」少し待つ（任意：すぐUIを反映したい場合）
@@ -1201,7 +1286,8 @@ window.initHunterMap = async function () {
     ].join(',');
     document.querySelectorAll(sel).forEach(chk => { chk.checked = true; });
     applyToggleStates();
-
+    const me = markersByUserId.get(Number(myUserId));
+    if (me) showMarker(me);
     bulkInit = false;
     sessionStorage.setItem('allSwitchesInit', '1');
   }
@@ -1372,11 +1458,13 @@ window.initHunterMap = async function () {
 
   async function renderMarkers() {
     const mapFlagNow = sessionStorage.getItem('mapFlag');
-
+    
     // インデックスは毎回作り直す
     markersById.clear();
     markerMetaByMid.clear?.();
+    const myMarker = markersByUserId.get(myUserId);
     markersByUserId.clear();
+    if (myMarker) markersByUserId.set(myUserId, myMarker);
     markersByModelNumber.clear();
     baDataIds.clear();
     carDataIds.clear();
@@ -1456,15 +1544,15 @@ window.initHunterMap = async function () {
             const lngNum = parseFloat(lng);
             if (isNaN(latNum) || isNaN(lngNum)) continue;
             latlngs.push([latNum, lngNum]);
-            await userCheck(user_id);
+            const isMe = (Number(user_id) === myUserId);
             // --- アイコン選択（あなたの既存判定をそのまま利用） ---
             let iconForMarker = largeIcon;               // デフォルト
+            // if (isMe)                  iconForMarker = userIcon;        // 自分（👤）
             if (status_flag == 4) iconForMarker = satelliteIcon;   // 衛星
-            else if (status_flag == 5) iconForMarker = carIcon;    // 車
-            else if (status_flag == 2) iconForMarker = personIcon; // 人（待ち）
-            else if (status_flag == 3) iconForMarker = dogIcon;    // 犬（デバイス）
-            else if (usercheck === 1) iconForMarker = userIcon;  // 自分（👤）
-            else iconForMarker = personRedIcon;                    // その他は赤い人
+            else if (status_flag == 5) iconForMarker = carIcon;         // 車
+            else if (status_flag == 2) iconForMarker = personIcon;      // 人（待ち）
+            else if (status_flag == 3) iconForMarker = dogIcon;         // 犬（デバイス）
+            else iconForMarker = personRedIcon;                         // その他は赤い人
             // この行の「論理キー」（user / device / ba / car）
             const k = keyForRow(user_id, username, model_number, status_flag, data_id);
             activeKeys.add(k);
@@ -1748,7 +1836,8 @@ window.initHunterMap = async function () {
           markersByModelNumber.forEach(hideMarker);
           baDataIds.forEach(id => hideMarker(markersByDataId.get(id)));
           carDataIds.forEach(id => hideMarker(markersByDataId.get(id)));
-
+          const me = markersByUserId.get(Number(myUserId));
+          if (me) showMarker(me);
           // 直前のトグル状態を再適用（5秒ごとの再描画に対応）
           visibleUsers.forEach(uid => showMarker(markersByUserId.get(Number(uid))));
           visibleModels.forEach(mn => showMarker(markersByModelNumber.get(String(mn))));
@@ -1760,6 +1849,8 @@ window.initHunterMap = async function () {
         
         // ★ 追加：再描画後に現在のトグル状態を反映（OFFのものは非表示化）
         applyToggleStates();
+        const me = markersByUserId.get(Number(myUserId));
+        if (me) showMarker(me);
         sessionStorage.removeItem('allSwitchesInit');
     } catch(error) {
       console.error('通信エラー:', error);
@@ -1812,6 +1903,8 @@ window.initHunterMap = async function () {
         await renderMarkers();
       }
       applyToggleStates();
+      const me = markersByUserId.get(Number(myUserId));
+      if (me) showMarker(me);
       sessionStorage.removeItem('allSwitchesInit');
       const savedKey = sessionStorage.getItem('selectedMarkerKey');
       if (savedKey) {
