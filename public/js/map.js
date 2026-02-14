@@ -459,6 +459,13 @@ window.initHunterMap = async function () {
   // 中心座標
   window._geoWatchId = null;
   let latestCoords = null;
+  let lastSavedAt = 0;
+  let lastSavedLatLng = null;
+  let saving = false;
+  const WATCH_OPT = { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 };
+  const SAVE_ACCURACY_MAX = 20; // m
+  const MIN_MOVE_M = 3;         // m
+  const MIN_SAVE_MS = 4500;     // ms
   await saveUserData(0);
   const initialCenter = [userLat, userLng];
   const zoomLevel = sessionStorage.getItem('zoomLevel'); // ズーム（数字が大きいほど拡大）
@@ -1008,12 +1015,112 @@ window.initHunterMap = async function () {
         navigator.geolocation.clearWatch(window._geoWatchId);
         window._geoWatchId = null;
       }
-
+      
+      // 既存 stopHunterMap に追加
+      if (window._myLocSaveLoopId) {
+        clearInterval(window._myLocSaveLoopId);
+        window._myLocSaveLoopId = null;
+      }
+      
       console.log("HunterMap stopped:", reason);
     } catch (e) {
       console.warn("stopHunterMap error:", e);
     }
   };
+
+  function distanceMeters(lat1, lng1, lat2, lng2) {
+    const R = 6371000;
+    const toRad = (d) => (d * Math.PI) / 180;
+    const dLat = toRad(lat2 - lat1);
+    const dLng = toRad(lng2 - lng1);
+    const a =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(a));
+  }
+
+  function startWatchPositionOnce() {
+    if (!("geolocation" in navigator)) {
+      throw new Error("このブラウザは位置情報に対応していません");
+    }
+    if (window._geoWatchId != null) return; // 既に開始済み
+
+    window._geoWatchId = navigator.geolocation.watchPosition(
+      (pos) => {
+        latestCoords = pos.coords;
+
+        userLat    = latestCoords.latitude;
+        userLng    = latestCoords.longitude;
+        userAcc    = latestCoords.accuracy;
+        userAlt    = latestCoords.altitude ?? 1.0;
+        userAltAcc = latestCoords.altitudeAccuracy ?? 0;
+
+        // デバッグ
+        console.log('省エネモード：OFF', latestCoords);
+      },
+      (err) => {
+        console.error("watchPosition error:", err);
+        // 権限拒否などはここでフラグを落としても良い（任意）
+        // gpsFlag = false;
+      },
+      WATCH_OPT
+    );
+  }
+  async function saveLatestToServerIfNeeded(pointType = 0) {
+    // mapFlag=1（通常）以外は保存しない（ポイント登録モード等で誤保存防止）
+    if (sessionStorage.getItem('mapFlag') !== '1') return;
+
+    if (!latestCoords) return;
+    if (saving) return;
+
+    const lat = latestCoords.latitude;
+    const lng = latestCoords.longitude;
+    const acc = latestCoords.accuracy;
+    const alt = latestCoords.altitude ?? 1.0;
+    const altacc = latestCoords.altitudeAccuracy ?? 0;
+
+    if (typeof acc === "number" && acc > SAVE_ACCURACY_MAX) return;
+
+    if (lastSavedLatLng) {
+      const moved = distanceMeters(lastSavedLatLng.lat, lastSavedLatLng.lng, lat, lng);
+      if (moved < MIN_MOVE_M) return;
+    }
+
+    const now = Date.now();
+    if (now - lastSavedAt < MIN_SAVE_MS) return;
+
+    saving = true;
+    try {
+      const setdata = {
+        id: Number(pointType), // 0 / 1 / 2 を合わせる
+        lat: Number(lat),
+        lng: Number(lng),
+        acc: Number(acc),
+        alt: Number(alt),
+        altacc: Number(altacc),
+      };
+
+      const response = await fetch(`${API_BASE}/api/setUserLocationInformation`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        credentials: "include",
+        cache: "no-store",
+        body: JSON.stringify(setdata),
+      });
+
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        console.error("現在地保存エラー:", result?.error || result);
+        return;
+      }
+
+      lastSavedAt = now;
+      lastSavedLatLng = { lat, lng };
+      // console.log("現在地保存OK:", lat, lng, "acc:", acc);
+    } finally {
+      saving = false;
+    }
+  }
 
   async function saveUserData(pointType) {
     // gpsFlagを確認（取得後に無効なら中断）
@@ -1030,19 +1137,21 @@ window.initHunterMap = async function () {
         await getPosition();
       }
       if (!eneFlag) {
-        await getWatchPosition();
-        const c = await waitForCoords({ timeoutMs: 6000, maxAcc: 20 }); // 例: 20m以下を優先
-        if (!c) {
-          console.log("現在地の取得に失敗しました");
-          return;
-        }
-        // 精度が悪いなら保存しない（下のコードと同じ思想）
-        if (typeof c.accuracy === "number" && c.accuracy > 50) {
-          console.log("精度が悪いので保存しない:", c.accuracy);
-          return;
+        // 現在地を継続監視で取得（1回だけ開始）
+        startWatchPositionOnce();
+
+        // 初回だけ「座標が入るまで」少し待つ（任意：すぐUIを反映したい場合）
+        await waitForCoords({ timeoutMs: 6000, maxAcc: 80 });
+        // watchの最新値を userLat/userLng に反映（wait中に入っていればOK）
+        if (latestCoords) {
+          userLat    = latestCoords.latitude;
+          userLng    = latestCoords.longitude;
+          userAcc    = latestCoords.accuracy;
+          userAlt    = latestCoords.altitude ?? 1.0;
+          userAltAcc = latestCoords.altitudeAccuracy ?? 0;
         }
       }
-      console.log("現在地:", userLat, userLng);
+      console.log("現在地:", userLat, userLng, userAcc);
     } catch (err) {
       alert("現在地の取得に失敗しました: " + err.message);
     }
@@ -1700,15 +1809,7 @@ window.initHunterMap = async function () {
   if (!window.mapRenderLoopId) {
     window.mapRenderLoopId = setInterval( async () => {
       if (sessionStorage.getItem('mapFlag') === '1') {
-        // sessionStorage.removeItem('selectedMarkerIndex');
-        const center = map.getCenter();
-        const zoom   = map.getZoom();
-
-        // 1秒待ってから同じデータで再生成
-        // setTimeout(() => {
         await renderMarkers();
-        // }, 1000);
-        // map.setView(center, zoom, { animate: false });
       }
       applyToggleStates();
       sessionStorage.removeItem('allSwitchesInit');
@@ -1856,8 +1957,10 @@ window.initHunterMap = async function () {
     pointPop.hidden = true;
     document.body.style.overflow = '';
   }
-  if (closeBtn && !window._pointPopCloseAttached) {
-    window._pointPopCloseAttached = true;
+  if (closeBtn) {
+    if (!window._pointPopCloseAttached) {
+      window._pointPopCloseAttached = true;
+    }
     closeBtn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -2629,4 +2732,10 @@ window.initHunterMap = async function () {
     }, { capture: true });
   }
   attachStopOnLeaveOnce();
+  if (!window._myLocSaveLoopId) {
+    window._myLocSaveLoopId = setInterval(() => {
+      // mapFlag=1の時だけ内部で保存される
+      saveLatestToServerIfNeeded(0).catch(console.error);
+    }, 5000);
+  }
 };
